@@ -8,10 +8,12 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '6405761799:AAFRFOG
 const OPENWEATHERMAP_API_KEY = process.env.OPENWEATHERMAP_API_KEY || 'e2a4dfe61c70e88c21fb341a59093b16'
 const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '060aaed1f37645fea51dc14997f537d5'
 const PORT = process.env.PORT || 3000
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = process.env.HOST || '0.0.0.0'
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
 const storage = {}
+const MSG_END = "Please select weather or time in previous message and enter the city name again.\n \
+If you don't see it, you can send /start to get this message again."
 
 bot.on("polling_error", (msg) => console.log(msg));
 
@@ -23,8 +25,8 @@ bot.onText(/\/start/, (msg) => {
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Get Weather', callback_data: 'get_weather' }],
-            [{ text: 'Get Time', callback_data: 'get_time' }],
+            [{ text: '\u26C5 Get Weather', callback_data: 'get_weather' }],
+            [{ text: '\u231A Get Time', callback_data: 'get_time' }],
           ],
         },
       }
@@ -98,19 +100,15 @@ async function getWeatherData(city) {
     const response = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHERMAP_API_KEY}`
     )
-    if (response.status!=200) {
-      messageText = 'Incorrect data. Please select weather or time in previous message and enter the city name again'
-      return messageText
-    }
     const weatherData = response.data
     const weatherDescription = weatherData.weather[0].description
     console.log(weatherDescription)
     const temperature = Math.round(weatherData.main.temp - 273.15)
-    const messageText = `The weather in ${city} is currently ${weatherDescription} with a temperature of ${temperature}°C.`
+    const messageText = `The weather in ${city} is currently ${weatherDescription} with a temperature of ${temperature}°C. ` + MSG_END
     return messageText 
   } catch(err) {
     console.log(err)
-    const messageText = 'Incorrect data. Please select weather or time in previous message and enter the city name again'
+    const messageText = "Incorrect data. " + MSG_END
     return messageText
   }
 }
@@ -122,11 +120,11 @@ async function getTimeData(city) {
     )
     const data = response.data
     const localTime = data.time_24
-    const messageText = `The current time in ${city} is ${localTime}.`
+    const messageText = `The current time in ${city} is ${localTime}. ` + MSG_END
     return messageText 
   } catch(err) {
     console.log(err)
-    const messageText = 'Incorrect data. Please select weather or time in previous message and enter the city name again'
+    const messageText = "Incorrect data. " + MSG_END
     return messageText
   }
 }
