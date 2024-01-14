@@ -7,6 +7,7 @@ import moment from 'moment-timezone'
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '6405761799:AAFRFOGnPZw0wMkdVJuxh3TCMkEWPI2HePY'
 const OPENWEATHERMAP_API_KEY = process.env.OPENWEATHERMAP_API_KEY || 'e2a4dfe61c70e88c21fb341a59093b16'
 const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '060aaed1f37645fea51dc14997f537d5'
+const PORT = process.env.PORT || 3000
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
 const storage = {}
