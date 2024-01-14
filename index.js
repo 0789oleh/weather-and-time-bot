@@ -10,7 +10,6 @@ const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '060aaed1f376
 const PORT = process.env.PORT || 3000
 const HOST = process.env.HOST || '0.0.0.0';
 
-
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
 const storage = {}
 
@@ -95,25 +94,40 @@ function resetUserData(chatId) {
 }
 
 async function getWeatherData(city) {
-  const response = await axios.get(
-    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHERMAP_API_KEY}`
-  )
-  const weatherData = response.data
-  const weatherDescription = weatherData.weather[0].description
-  console.log(weatherDescription)
-  const temperature = Math.round(weatherData.main.temp - 273.15)
-  const messageText = `The weather in ${city} is currently ${weatherDescription} with a temperature of ${temperature}°C.`
-  return messageText 
+  try {
+    const response = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHERMAP_API_KEY}`
+    )
+    if (response.status!=200) {
+      messageText = 'Incorrect data. Please select weather or time in previous message and enter the city name again'
+      return messageText
+    }
+    const weatherData = response.data
+    const weatherDescription = weatherData.weather[0].description
+    console.log(weatherDescription)
+    const temperature = Math.round(weatherData.main.temp - 273.15)
+    const messageText = `The weather in ${city} is currently ${weatherDescription} with a temperature of ${temperature}°C.`
+    return messageText 
+  } catch(err) {
+    console.log(err)
+    const messageText = 'Incorrect data. Please select weather or time in previous message and enter the city name again'
+    return messageText
+  }
 }
 
 async function getTimeData(city) {
-  
-  const response = await axios.get(
-    `https://api.ipgeolocation.io/timezone?apiKey=${IPGEOLOCATION_API_KEY}&location=${city}`
-  )
-  const data = response.data
-  const localTime = data.time_24
-  const messageText = `The current time in ${city} is ${localTime}.`
-  return messageText 
+  try {
+    const response = await axios.get(
+    ` https://api.ipgeolocation.io/timezone?apiKey=${IPGEOLOCATION_API_KEY}&location=${city}`
+    )
+    const data = response.data
+    const localTime = data.time_24
+    const messageText = `The current time in ${city} is ${localTime}.`
+    return messageText 
+  } catch(err) {
+    console.log(err)
+    const messageText = 'Incorrect data. Please select weather or time in previous message and enter the city name again'
+    return messageText
+  }
 }
 
