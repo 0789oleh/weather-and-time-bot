@@ -8,6 +8,8 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '6405761799:AAFRFOG
 const OPENWEATHERMAP_API_KEY = process.env.OPENWEATHERMAP_API_KEY || 'e2a4dfe61c70e88c21fb341a59093b16'
 const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '060aaed1f37645fea51dc14997f537d5'
 const PORT = process.env.PORT || 3000
+const HOST = process.env.HOST || '0.0.0.0';
+
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
 const storage = {}
