@@ -2,6 +2,7 @@
 import TelegramBot from 'node-telegram-bot-api'
 import axios from 'axios'
 import moment from 'moment-timezone'
+import express from "express"
 
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '6405761799:AAFRFOGnPZw0wMkdVJuxh3TCMkEWPI2HePY'
@@ -10,6 +11,7 @@ const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '060aaed1f376
 const PORT = process.env.PORT || 3000
 const HOST = process.env.HOST || '0.0.0.0'
 
+express().listen(PORT, () => console.log(`Listening on ${ PORT }`))
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
 const storage = {}
 const MSG_END = "Please select weather or time in previous message and enter the city name again.\n \
