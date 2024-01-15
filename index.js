@@ -98,6 +98,10 @@ function resetUserData(chatId) {
 }
 
 async function getWeatherData(city) {
+  if (city === '/stop') {
+    const messsageText = 'Thank you for using this bot. If you want to get any information about time and weather, send /start message'
+    return messsageText
+  }
   try {
     const response = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHERMAP_API_KEY}`
@@ -116,6 +120,10 @@ async function getWeatherData(city) {
 }
 
 async function getTimeData(city) {
+  if (city === '/stop') {
+    const messsageText = 'Thank you for using this bot. If you want to get any information about time and weather, send /start message'
+    return messsageText
+  }
   try {
     const response = await axios.get(
     ` https://api.ipgeolocation.io/timezone?apiKey=${IPGEOLOCATION_API_KEY}&location=${city}`
