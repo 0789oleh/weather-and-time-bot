@@ -74,20 +74,24 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id
   const text = msg.text
 
+  if(text === '/stop') {
+    bot.sendMessage(chatId, 'Thank you for using this bot. If you want to get any information about time and weather, send /start message')
+  }
+
   const userData = getUserData(chatId)
 
-    if (userData && userData.waitingForCity) {
-      const city = text
-      let messageText = ''
-      if (userData.waitingForWeather) {
+  if (userData && userData.waitingForCity) {
+    const city = text
+    let messageText = ''
+    if (userData.waitingForWeather) {
         messageText = await getWeatherData(city)
-      } else if (userData.waitingForTime) {
+    } else if (userData.waitingForTime) {
         messageText = await getTimeData(city)
-      }
-      bot.sendMessage(chatId, messageText)
-      resetUserData(chatId)
-      
     }
+    bot.sendMessage(chatId, messageText)
+    resetUserData(chatId)
+      
+  }
 })
 
 function resetUserData(chatId) {
@@ -98,10 +102,6 @@ function resetUserData(chatId) {
 }
 
 async function getWeatherData(city) {
-  if (city === '/stop') {
-    const messsageText = 'Thank you for using this bot. If you want to get any information about time and weather, send /start message'
-    return messsageText
-  }
   try {
     const response = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHERMAP_API_KEY}`
@@ -120,10 +120,6 @@ async function getWeatherData(city) {
 }
 
 async function getTimeData(city) {
-  if (city === '/stop') {
-    const messsageText = 'Thank you for using this bot. If you want to get any information about time and weather, send /start message'
-    return messsageText
-  }
   try {
     const response = await axios.get(
     ` https://api.ipgeolocation.io/timezone?apiKey=${IPGEOLOCATION_API_KEY}&location=${city}`
