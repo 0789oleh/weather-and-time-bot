@@ -3,6 +3,7 @@ import TelegramBot from 'node-telegram-bot-api'
 import axios from 'axios'
 import moment from 'moment-timezone'
 import express from "express"
+import { writeUserToJson } from './subscriptions/subscription_service.js'
 
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '6405761799:AAFRFOGnPZw0wMkdVJuxh3TCMkEWPI2HePY'
@@ -12,10 +13,10 @@ const PORT = process.env.PORT || 3000
 const HOST = process.env.HOST || '0.0.0.0'
 
 express().listen(PORT, () => console.log(`Listening on ${ PORT }`))
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
+export const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true })
 const storage = {}
-const MSG_END = "Please select weather or time in previous message and enter the city name again.\n \
-If you don't see it, you can send /start to get this message again."
+const MSG_END = 'Please select weather or time in previous message and enter the city name again.\n \
+If you don\'t see it, you can send /start to get this message again.'
 
 bot.on("polling_error", (msg) => console.log(msg));
 
@@ -64,6 +65,7 @@ function getUserData(chatId) {
         waitingForCity: false,
         waitingForWeather: false,
         waitingForTime: false,
+        waitingForSubscription: false
       }
       storage[chatId] = userData
     }
@@ -87,6 +89,10 @@ bot.on('message', async (msg) => {
         messageText = await getWeatherData(city)
     } else if (userData.waitingForTime) {
         messageText = await getTimeData(city)
+    } else if(userData.waitingForSubscription) {
+        timezone = await getTimeZone(city)
+        writeUserToJson(chatId, city, timezone)
+        messageText = 'Thank you for subscribing for weather in ${city}'
     }
     bot.sendMessage(chatId, messageText)
     resetUserData(chatId)
@@ -110,7 +116,7 @@ async function getWeatherData(city) {
     const weatherDescription = weatherData.weather[0].description
     console.log(weatherDescription)
     const temperature = Math.round(weatherData.main.temp - 273.15)
-    const messageText = `The weather in ${city} is currently ${weatherDescription} with a temperature of ${temperature}°C. ` + MSG_END
+    const messageText = 'The weather in ${city} is currently ${weatherDescription} with a temperature of ${temperature}°C.' + MSG_END
     return messageText 
   } catch(err) {
     console.log(err)
@@ -122,7 +128,7 @@ async function getWeatherData(city) {
 async function getTimeData(city) {
   try {
     const response = await axios.get(
-    ` https://api.ipgeolocation.io/timezone?apiKey=${IPGEOLOCATION_API_KEY}&location=${city}`
+    'https://api.ipgeolocation.io/timezone?apiKey=${IPGEOLOCATION_API_KEY}&location=${city}'
     )
     const data = response.data
     const localTime = data.time_24
